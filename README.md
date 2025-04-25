@@ -1,12 +1,32 @@
-# React + Vite
+useQuery and usemutation are two custom hooks from react-query library
+query for get data
+mutation for changing data
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+```javascript
 
-Currently, two official plugins are available:
+  const postQuery = useQuery({
+    // a key uniquely identifies this query
+    queryKey: ["posts"],
+    // function queries our data
+    queryFn: (obj) => wait(1000).then(() => {
+      console.log(obj)
+      return [...POSTS]
+    }), // query function expect to return a promise
+  })
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+const newPostMutation = useMutation({
+    mutationFn: (title) => {
+      wait(1000).then(() => {
+        // push a new post into posts array
+        POSTS.push({ id: crypto.randomUUID(), title });
+      });
+    },
+    onSuccess: () => {
+      // mark the "posts" query as stale
+      // This forces TanStack Query to refetch the posts data
+      // This ensures your UI stays in sync with the latest data after making changes
+      queryClient.invalidateQueries(["posts"]);
+    },
+})
+```
